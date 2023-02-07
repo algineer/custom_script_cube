@@ -1,10 +1,6 @@
-var car_clicked = false
-var label = new Set()
-var etype_err = new Set()
-var trans_button = document.createElement('button')
-
-var key_frames = []
-
+var count = 0
+var etype_err = []
+var once = false
 
 async function copyContent(time_ldap_flag, time, count, error) {
     var FQA = 'Y'
@@ -22,54 +18,33 @@ async function copyContent(time_ldap_flag, time, count, error) {
     }
 }
 
-function keyFrameButton() {
-
-}
-
-
 requestAnimationFrame(clip_loop)
 
 function clip_loop() {
-    var count_overflow = document.querySelector("#root > main > div > div.css-q2fgle > div.css-1nice15 > div.css-ogvgbo > div.css-427fvc > div.css-1blqnaw > div:nth-child(1) > div > div")
-    var count = document.querySelector("#root > main > div > div.css-q2fgle > div.css-1nice15 > div.css-ogvgbo > div:nth-child(5)")
-    var count2 = document.querySelector("#root > main > div > div.css-q2fgle > div.css-1nice15 > div.css-ogvgbo > div:nth-child(4)")
 
-    document.addEventListener('wheel', () => {
+    var car_count_text = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-1it6c3t > div > div.css-y2wiop > div:nth-child(3) > div:nth-child(2)")
+    var etype_err_text = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-1it6c3t > div > div.css-y2wiop > div:nth-child(1) > div:nth-child(2)")
+    if (car_count_text != null && etype_err != null && !once) {
 
-        if (count_overflow != null) {
-            count_overflow.childNodes.forEach(e => {
-                var label_num = e.firstChild.firstChild.firstChild.firstChild.firstChild.textContent
-                label.add(label_num)
-                var etype = e.firstChild.firstChild.firstChild.childNodes[3].lastChild.value
-                if (etype == 'unknown')
-                    etype_err.add(label_num)
-            })
-        } else if (count != null) {
-            count.childNodes.forEach((e, i) => {
-                if (i > 1) {
-                    var label_num = e.firstChild.firstChild.firstChild.textContent
-                    label.add(label_num)
-                    var etype = e.firstChild.childNodes[3].lastChild.value
-                    if (etype == 'unknown')
-                        etype_err.add(label_num)
+        var test = this.baobabState.toJSON()
+        var video_key = this.video.name.split(' ')[1]
+        var data = test.videoData[video_key]
+        var labels = data.labels.cuboid
+
+        labels.forEach((l) => {
+            if (l.type == 'car') {
+                count++
+                if (l.emergencyType == 'unknown') {
+                    etype_err.push(l._id)
                 }
-            })
-        } else if (count2 != null) {
-            count2.childNodes.forEach((e, i) => {
-                if (i > 1) {
-                    var label_num = e.firstChild.firstChild.firstChild.textContent
-                    label.add(label_num)
-                    var etype = e.firstChild.childNodes[3].lastChild.value
-                    if (etype == 'unknown')
-                        etype_err.add(label_num)
-                }
-            })
-        }
+            }
+        })
 
-        document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-1it6c3t > div > div.css-y2wiop > div:nth-child(3) > div:nth-child(2)").textContent = `Car Count: ${label.size}`
-        document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-1it6c3t > div > div.css-y2wiop > div:nth-child(1) > div:nth-child(2)").textContent = 'Unknown etype: ' + [...etype_err].join(', ')
+        car_count_text.textContent = `Car Count: ${count}`
+        etype_err_text.textContent = 'Unknown etype: ' + [...etype_err].join(', ')
+        once = true
+    }
 
-    });
 
     document.addEventListener("keydown", (e) => {
         if (e.repeat) { return }
@@ -107,18 +82,10 @@ function clip_loop() {
                 if (parseInt(time_flag[0]) * 60 + parseInt(time_flag[1]) > 70)
                     time_ldap_flag = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div > div.css-10qyh7 > div > div.css-15yn9g5 > div:nth-child(14) > span").textContent
 
-                copyContent(time_ldap_flag, time, label.size, [...etype_err].join(', '))
+                copyContent(time_ldap_flag, time, count, [...etype_err].join(', '))
             }
         }
     });
-
-
-    if (count != null) {
-        keyFrameButton(count)
-    } else if (count_overflow != null) {
-        keyFrameButton(count_overflow)
-    }
-
 
     requestAnimationFrame(clip_loop)
 }
