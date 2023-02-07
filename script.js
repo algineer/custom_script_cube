@@ -79,7 +79,7 @@ function clip_loop() {
 
                 var time_flag = time.split(':')
                 var time_ldap_flag = ''
-                if (parseInt(time_flag[0]) * 60 + parseInt(time_flag[1]) > 70)
+                if (parseInt(time_flag[0]) * 60 + parseInt(time_flag[1]) > 150)
                     time_ldap_flag = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div > div.css-10qyh7 > div > div.css-15yn9g5 > div:nth-child(14) > span").textContent
 
                 copyContent(time_ldap_flag, time, count, [...etype_err].join(', '))
