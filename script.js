@@ -34,7 +34,7 @@ function clip_loop() {
         labels.forEach((l) => {
             if (l.type == 'car') {
                 count++
-                if (l.emergencyType == 'unknown') {
+                if (l.emergencyType === undefined) {
                     etype_err.push(l._id)
                 }
             }
