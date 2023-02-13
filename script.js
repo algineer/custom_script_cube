@@ -1,6 +1,7 @@
 var count = 0
 var etype_err = []
 var once = false
+var hotkey_on = false
 
 async function copyToClipboard(time_ldap_flag, time, count, error) {
     var FQA = 'Y'
@@ -46,47 +47,48 @@ function clip_loop() {
         once = true
     }
 
+    if (!hotkey_on) {
+        document.addEventListener("keydown", (e) => {
+            if (e.repeat) { return }
 
-    document.addEventListener("keydown", (e) => {
-        if (e.repeat) { return }
+            var trans = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div")
+            if (trans != null) {
+                if (e.ctrlKey && e.shiftKey && e.key == "C") {
+                    e.preventDefault()
+                    var time = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div > div.css-10qyh7 > div > div.css-15yn9g5 > div:nth-child(17)").textContent
+                    if (time.includes('m') && time.includes('s')) {
 
-        var trans = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div")
-        if (trans != null) {
-            if (e.ctrlKey && e.shiftKey && e.key == "C") {
-                e.preventDefault()
-                var time = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div > div.css-10qyh7 > div > div.css-15yn9g5 > div:nth-child(17)").textContent
-                if (time.includes('m') && time.includes('s')) {
+                        time = time.replace('s', '')
+                        time = time.replace('m', '')
+                        time = time.split(' ')
 
-                    time = time.replace('s', '')
-                    time = time.replace('m', '')
-                    time = time.split(' ')
+                        if (parseInt(time[1]) < 10)
+                            time = `${time[0]}:0${time[1]}`
+                        else
+                            time = `${time[0]}:${time[1]}`
 
-                    if (parseInt(time[1]) < 10)
-                        time = `${time[0]}:0${time[1]}`
-                    else
-                        time = `${time[0]}:${time[1]}`
+                    } else if (time.includes('s')) {
+                        time = time.replace('s', '')
+                        if (parseInt(time) < 10)
+                            time = `0:0${time}`
+                        else
+                            time = `0:${time}`
 
-                } else if (time.includes('s')) {
-                    time = time.replace('s', '')
-                    if (parseInt(time) < 10)
-                        time = `0:0${time}`
-                    else
-                        time = `0:${time}`
+                    } else if (time.includes('m')) {
+                        time = time.replace('m', '')
+                        time = `${time}:00`
+                    }
 
-                } else if (time.includes('m')) {
-                    time = time.replace('m', '')
-                    time = `${time}:00`
+                    var time_flag = time.split(':')
+                    var time_ldap_flag = ''
+                    if (parseInt(time_flag[0]) * 60 + parseInt(time_flag[1]) > 150)
+                        time_ldap_flag = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div > div.css-10qyh7 > div > div.css-15yn9g5 > div:nth-child(14) > span").textContent
+
+                    copyToClipboard(time_ldap_flag, time, count, [...etype_err].join(', '))
                 }
-
-                var time_flag = time.split(':')
-                var time_ldap_flag = ''
-                if (parseInt(time_flag[0]) * 60 + parseInt(time_flag[1]) > 150)
-                    time_ldap_flag = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div > div.css-10qyh7 > div > div.css-15yn9g5 > div:nth-child(14) > span").textContent
-
-                copyToClipboard(time_ldap_flag, time, count, [...etype_err].join(', '))
             }
-        }
-    });
-
+        });
+        hotkey_on = true
+    }
     requestAnimationFrame(clip_loop)
 }
