@@ -2,7 +2,7 @@ var count = 0
 var etype_err = []
 var once = false
 
-async function copyContent(time_ldap_flag, time, count, error) {
+async function copyToClipboard(time_ldap_flag, time, count, error) {
     var FQA = 'Y'
     var FQA_ldap = '\t'
     if (error != '') {
@@ -18,6 +18,7 @@ async function copyContent(time_ldap_flag, time, count, error) {
     }
 }
 
+
 requestAnimationFrame(clip_loop)
 
 function clip_loop() {
@@ -32,7 +33,7 @@ function clip_loop() {
         var labels = data.labels.cuboid
 
         labels.forEach((l) => {
-            if (l.type == 'car') {
+            if (l.type == 'suv') {
                 count++
                 if (l.emergencyType === undefined) {
                     etype_err.push(l._id)
@@ -40,7 +41,7 @@ function clip_loop() {
             }
         })
 
-        car_count_text.textContent = `Car Count: ${count}`
+        car_count_text.textContent = `SUV Count: ${count}`
         etype_err_text.textContent = 'Unknown etype: ' + [...etype_err].join(', ')
         once = true
     }
@@ -82,7 +83,7 @@ function clip_loop() {
                 if (parseInt(time_flag[0]) * 60 + parseInt(time_flag[1]) > 150)
                     time_ldap_flag = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div > div.css-10qyh7 > div > div.css-15yn9g5 > div:nth-child(14) > span").textContent
 
-                copyContent(time_ldap_flag, time, count, [...etype_err].join(', '))
+                copyToClipboard(time_ldap_flag, time, count, [...etype_err].join(', '))
             }
         }
     });
