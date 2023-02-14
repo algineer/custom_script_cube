@@ -1,5 +1,7 @@
 var count = 0
 var etype_err = []
+var time_flag = 180
+var vehicle_type = 'car'
 var once = false
 var hotkey_on = false
 
@@ -34,7 +36,7 @@ function clip_loop() {
         var labels = data.labels.cuboid
 
         labels.forEach((l) => {
-            if (l.type == 'suv') {
+            if (l.type === vehicle_type) {
                 count++
                 if (l.emergencyType === undefined) {
                     etype_err.push(l._id)
@@ -42,7 +44,7 @@ function clip_loop() {
             }
         })
 
-        car_count_text.textContent = `SUV Count: ${count}`
+        car_count_text.textContent = `${vehicle_type} count: ${count}`
         etype_err_text.textContent = 'Unknown etype: ' + [...etype_err].join(', ')
         once = true
     }
@@ -79,9 +81,9 @@ function clip_loop() {
                         time = `${time}:00`
                     }
 
-                    var time_flag = time.split(':')
+                    var flag = time.split(':')
                     var time_ldap_flag = ''
-                    if (parseInt(time_flag[0]) * 60 + parseInt(time_flag[1]) > 50)
+                    if (parseInt(flag[0]) * 60 + parseInt(flag[1]) > time_flag)
                         time_ldap_flag = document.querySelector("#root > main > div > div.css-120gz53 > div > div.css-15n39pb > div > div.css-10qyh7 > div > div.css-15yn9g5 > div:nth-child(14) > span").textContent
 
                     copyToClipboard(time_ldap_flag, time, count, [...etype_err].join(', '))
